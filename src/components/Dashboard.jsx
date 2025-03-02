@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -24,6 +24,36 @@ ChartJS.register(
 const Dashboard = () => {
   const monthlyExpensesData = [500, 800, 1200, 1500, 2000];
   const categoryExpensesData = [30, 40, 30];
+
+  const [expenses, setExpenses] = useState([]);
+  const [newExpense, setNewExpense] = useState({
+    description: "",
+    amount: "",
+    category: "",
+    status: "pending",
+  });
+
+  const handleInputChange = (e) => {
+    setNewExpense({ ...newExpense, [e.target.name]: e.target.value });
+  };
+
+  const handleExpenseSubmit = (e) => {
+    e.preventDefault();
+    setExpenses([...expenses, newExpense]);
+    setNewExpense({ description: "", amount: "", category: "", status: "pending" });
+  };
+
+  const handleApprove = (index) => {
+    const updatedExpenses = [...expenses];
+    updatedExpenses[index].status = "approved";
+    setExpenses(updatedExpenses);
+  };
+
+  const handleReject = (index) => {
+    const updatedExpenses = [...expenses];
+    updatedExpenses[index].status = "rejected";
+    setExpenses(updatedExpenses);
+  };
 
   const TotalExpenses = ({ amount }) => {
     return (
@@ -104,7 +134,7 @@ const Dashboard = () => {
     <div style={styles.container}>
       <div style={styles.topCards}>
         <TotalExpenses amount={5000} />
-        <PendingApprovals amount={1200} />
+        <PendingApprovals amount={expenses.filter((exp) => exp.status === "pending").length} />
       </div>
       <div style={styles.chartsContainer}>
         <div style={styles.chart}>
@@ -114,11 +144,64 @@ const Dashboard = () => {
           <ExpensesByCategoryChart data={categoryExpensesData} />
         </div>
       </div>
+
+      <div style={styles.expenseForm}>
+        <h2>Submit Expense</h2>
+        <form onSubmit={handleExpenseSubmit}>
+          <input
+            type="text"
+            name="description"
+            placeholder="Description"
+            value={newExpense.description}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+          <input
+            type="number"
+            name="amount"
+            placeholder="Amount"
+            value={newExpense.amount}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+          <select
+            name="category"
+            value={newExpense.category}
+            onChange={handleInputChange}
+            style={styles.input}
+          >
+            <option value="">Select Category</option>
+            <option value="Travel">Travel</option>
+            <option value="Food">Food</option>
+            <option value="Supplies">Supplies</option>
+          </select>
+          <button type="submit" style={styles.button}>Submit</button>
+        </form>
+      </div>
+
+      <div style={styles.expenseList}>
+        <h2>Expense Approvals</h2>
+        {expenses.map((expense, index) => (
+          <div key={index} style={styles.expenseItem}>
+            <p>Description: {expense.description}</p>
+            <p>Amount: ${expense.amount}</p>
+            <p>Category: {expense.category}</p>
+            <p>Status: {expense.status}</p>
+            {expense.status === "pending" && (
+              <div>
+                <button onClick={() => handleApprove(index)} style={styles.approveButton}>Approve</button>
+                <button onClick={() => handleReject(index)} style={styles.rejectButton}>Reject</button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
 const styles = {
+  // ... (previous styles)
   container: {
     padding: "20px",
     fontFamily: "sans-serif",
@@ -160,6 +243,55 @@ const styles = {
     border: "1px solid #E2E8F0",
     borderRadius: "8px",
     padding: "20px",
+  },
+
+  expenseForm: {
+    marginTop: "20px",
+    border: "1px solid #E2E8F0",
+    borderRadius: "8px",
+    padding: "20px",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    marginBottom: "10px",
+    border: "1px solid #E2E8F0",
+    borderRadius: "4px",
+  },
+  button: {
+    backgroundColor: "#48BB78",
+    color: "white",
+    padding: "10px 15px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  expenseList: {
+    marginTop: "20px",
+    border: "1px solid #E2E8F0",
+    borderRadius: "8px",
+    padding: "20px",
+  },
+  expenseItem: {
+    borderBottom: "1px solid #E2E8F0",
+    padding: "10px",
+  },
+  approveButton: {
+    backgroundColor: "green",
+    color: "white",
+    padding: "5px 10px",
+    marginRight: "5px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  rejectButton: {
+    backgroundColor: "red",
+    color: "white",
+    padding: "5px 10px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
 };
 
