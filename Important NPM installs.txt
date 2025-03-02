@@ -1,0 +1,8 @@
+To run the project install vite in VS code or in your IDLE.
+
+npm install vite --save-dev
+
+To run it
+
+npm run dev
+
