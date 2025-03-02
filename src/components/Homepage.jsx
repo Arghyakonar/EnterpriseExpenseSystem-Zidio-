@@ -15,9 +15,9 @@ const Homepage = () => {
               </Link>
             </li>
             <li>
-              <a href="#" className="text-gray-700 hover:text-indigo-600">
-                About
-              </a>
+            <Link to="/dashboard" className="text-gray-700 hover:text-indigo-600">
+                Dashboard
+              </Link>
             </li>
             <li>
               <a href="#" className="text-gray-700 hover:text-indigo-600">
