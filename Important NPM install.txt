@@ -6,3 +6,5 @@ To run it
 
 npm run dev
 
+
+For any query contact me : arghyakonar39@gmail.com
